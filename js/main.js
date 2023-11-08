@@ -1,101 +1,87 @@
-const diff1 = document.querySelector('#diff1');
-const diff2 = document.querySelector('#diff2');
-const diff3 = document.querySelector('#diff3');
+// prendo il pulsante PLAY
+const play = document.querySelector('#play');
 
+// pulsante per refrshare la pagina
 const reset = document.querySelector('#reset');
 
+// faccio apparire la mia griglia al click del play
+play.addEventListener('click', function() {
+    console.log('Inizio partita'); 
+
+    // funzione crea tabella
+    createGrid();
+
+});
+
+// al click del pulsante reset refresho la pagina
 reset.addEventListener('click', function() {
     location.reload();
 });
 
 
-diff1.addEventListener('click', function() {
-    // add class active
-    diff1.classList.add('active');
+/************** functions **************/
+function getLevel() {
+    // funzione che mi prende il livello a cui voglio giocare
+    const livello = parseInt(document.querySelector('#livello').value);
+    // mi loggo il livello a cui gioco
+    console.log('Difficoltà: ', livello);
+    return livello;
+}
 
-    // creo una griglia dinamica, inserendo N elemnti .square nel container
-    let nCells = 100;
-
+// faccio una funzione che mi crea la mia griglia 
+function createGrid() {
+    // CREO LA MIA GRIGLIA E LA SVUOTO
     // mi prendo la mia griglia
     let grid = document.querySelector('#grid');
+    // mi assicuro che la griglia sia vuota
+    grid.innerHTML = '';
+    
+    // mi prendo la funzione getLevel() e la ricchiamo
+    const livello = getLevel();
+    // creo le variabili delle celle totati e celle per riga
+    let totCells;
+    let cellsForRow;
 
-    // prendo il pulsante PLAY
-    const play = document.querySelector('#play');
+    // condiziono per difficoltà
+    if (livello == 1) {
+        totCells = 100; // celle totali
+        cellsForRow = Math.sqrt(totCells);  // celle per riga (sqrt di celle totali) 
+    } else if (livello == 2) {
+        totCells = 81;  // celle totali
+        cellsForRow = Math.sqrt(totCells);  // celle per riga (sqrt di celle totali) 
+    } else if (livello == 3) {
+        totCells = 49;  // celle totali
+        cellsForRow = Math.sqrt(totCells);  // celle per riga (sqrt di celle totali) 
+    }
 
-    // faccio apparire la mia griglia al click del play
-    play.addEventListener('click', function() {
+    // array with 16 casual number
+    const arrayR = [];
+    while (arrayR.length < 16) {
+        let randomNumber = randomNum(1, totCells);
         
-        // FOR che mi cicla da 1 cella a nCells che ho impostato
-        for (let i = 1; i <= nCells; i++) {
-
-            
-            let cell = createSquare(i);
-            // metto il div nel mio cell nella dabella grid
-            grid.appendChild(cell);
-            
+        // la condizione controlla se se il numero generato casualmente non esiste già nell'array
+        if (arrayR.indexOf(randomNumber) === -1) {
+            // dopo aver fatto il controllo, aggiunge il numero NON doppiato
+            arrayR.push(randomNumber);
         }
-    });
-});
+    }
 
+    console.log('Celle che ti fanno esplodere: ', arrayR);
 
-diff2.addEventListener('click', function() {
-    // add class active
-    diff2.classList.add('active');
+    // FOR che mi cicla da 1 cella a nCells che ho impostato
+    for (let i = 1; i <= totCells; i++) {
+        // prendo la funzione crea quadrato
+        let cell = createSquare(i);
 
-    document.documentElement.style.setProperty('--n-cell-for-row', 9);
-    // creo una griglia dinamica, inserendo N elemnti .square nel container
-    let nCells = 81;
-
-    // mi prendo la mia griglia
-    let grid = document.querySelector('#grid');
-
-    // prendo il pulsante PLAY
-    const play = document.querySelector('#play');
-
-    // faccio apparire la mia griglia al click del play
-    play.addEventListener('click', function() {
+        // modifico la larghezza e l'altezza nel css
+        cell.style.width = `calc(100% / ${cellsForRow})`
+        cell.style.height = `calc(100% / ${cellsForRow})`;
+        // metto il div nel mio cell nella dabella grid
+        grid.appendChild(cell);
         
-        // FOR che mi cicla da 1 cella a nCells che ho impostato
-        for (let i = 1; i <= nCells; i++) {
+    }
+}
 
-            
-            let cell = createSquare(i);
-            // metto il div nel mio cell nella dabella grid
-            grid.appendChild(cell);
-            
-        }
-    });
-});
-
-diff3.addEventListener('click', function() {
-    // add class active
-    diff3.classList.add('active');
-
-    document.documentElement.style.setProperty('--n-cell-for-row', 7);
-
-    // creo una griglia dinamica, inserendo N elemnti .square nel container
-    let nCells = 49;
-
-    // mi prendo la mia griglia
-    let grid = document.querySelector('#grid');
-
-    // prendo il pulsante PLAY
-    const play = document.querySelector('#play');
-
-    // faccio apparire la mia griglia al click del play
-    play.addEventListener('click', function() {
-        
-        // FOR che mi cicla da 1 cella a nCells che ho impostato
-        for (let i = 1; i <= nCells; i++) {
-
-            
-            let cell = createSquare(i);
-            // metto il div nel mio cell nella dabella grid
-            grid.appendChild(cell);
-            
-        }
-    });
-});
 
 function createSquare(i) {
     // creo il mio div
@@ -122,4 +108,9 @@ function createSquare(i) {
 
     // return 
     return cell;
+}
+
+// function random number 
+function randomNum(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
