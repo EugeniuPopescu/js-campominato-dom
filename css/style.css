@@ -1,0 +1,27 @@
+:root {
+    --n-cell-for-row: 10; 
+}
+
+#grid {
+    display: flex;
+    flex-wrap: wrap;
+
+    margin: 0 auto;
+
+    width: 45rem;
+    height: 45rem;
+}
+
+.square{
+    border: solid 3px blue;
+
+    color: springgreen;
+    font-size: large;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.highlight {
+    background: fuchsia;
+}
