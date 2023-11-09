@@ -15,7 +15,7 @@
 .square{
     border: solid 3px blue;
 
-    color: springgreen;
+    color: gainsboro;
     font-size: large;
     display: flex;
     justify-content: center;
@@ -23,5 +23,9 @@
 }
 
 .highlight {
-    background: fuchsia;
+    background: limegreen;
+}
+
+.bomb {
+    background: crimson;
 }

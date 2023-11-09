@@ -4,6 +4,12 @@ const play = document.querySelector('#play');
 // pulsante per refrshare la pagina
 const reset = document.querySelector('#reset');
 
+// dicchiaro il mio gameover con scope generale
+let gameover = false; 
+
+// dicchiaro il mio punteggio e lo metto uguale a 0
+let punteggio = 0;
+
 // faccio apparire la mia griglia al click del play
 play.addEventListener('click', function() {
     console.log('Inizio partita'); 
@@ -35,8 +41,10 @@ function createGrid() {
     let grid = document.querySelector('#grid');
     // mi assicuro che la griglia sia vuota
     grid.innerHTML = '';
+
     
     // mi prendo la funzione getLevel() e la ricchiamo
+    // recupero il livello di difficoltà 
     const livello = getLevel();
     // creo le variabili delle celle totati e celle per riga
     let totCells;
@@ -54,28 +62,64 @@ function createGrid() {
         cellsForRow = Math.sqrt(totCells);  // celle per riga (sqrt di celle totali) 
     }
 
-    // array with 16 casual number
-    const arrayR = [];
-    while (arrayR.length < 16) {
-        let randomNumber = randomNum(1, totCells);
+    // array with 16 casual number PER LA LISTA DI BOMBE
+    const arrayBombs = [];
+
+    // uso il LENGTH dell'array come contatore
+    while (arrayBombs.length < 16) {
+        const randomNumber = randomNum(1, totCells);
         
-        // la condizione controlla se se il numero generato casualmente non esiste già nell'array
-        if (arrayR.indexOf(randomNumber) === -1) {
-            // dopo aver fatto il controllo, aggiunge il numero NON doppiato
-            arrayR.push(randomNumber);
+        // SE l'array NON contiene il numero allora lo pusho
+        if (!arrayBombs.includes(randomNumber)) {
+            arrayBombs.push(randomNumber);
         }
     }
-
-    console.log('Celle che ti fanno esplodere: ', arrayR);
+    console.log('Bombs cells: ', arrayBombs);
 
     // FOR che mi cicla da 1 cella a nCells che ho impostato
     for (let i = 1; i <= totCells; i++) {
-        // prendo la funzione crea quadrato
-        let cell = createSquare(i);
+        
+        // prendo la funzione crea quadrato CON GLI ARGOMENTI PASSATI
+        let cell = createSquare(i, arrayBombs, gameover);
 
         // modifico la larghezza e l'altezza nel css
         cell.style.width = `calc(100% / ${cellsForRow})`
         cell.style.height = `calc(100% / ${cellsForRow})`;
+
+        // aggiungo un addEvenListener per ogni cella al click
+        // voglio gestire ogni quadrato al click
+        cell.addEventListener('click', function () {
+            
+            // al console log fa vedere che cella clicko
+            console.log(`cell N: ${i}`);
+
+            /** 
+                gamover = false; -> negando il gameover lo si da per true
+                nell'else mettendo il gameover = true; fermo il gioco 
+            **/
+            if (!gameover) {
+                // CONTROLLO L'ARRAY DELLE BOMBE
+                if (!arrayBombs.includes(i)) {
+                    // this (si riferisce all'elemento dell'addEvenetListener)
+                    this.classList.add('highlight');
+                    punteggio++;
+                    document.querySelector('#message').style.color = 'limegreen';
+                    document.querySelector('#message').innerHTML = `SCORE ${punteggio}`
+                } else {
+                    this.classList.add('bomb');
+                    gameover = true;
+                    console.log();
+                    document.querySelector('#message').style.color = 'red';
+                    alert(`BOMBA!  casella N.${i}, HAI PERSO!`);
+                }
+            }
+
+
+            
+            //  toggle (aggiunge e toglie la classe da un elemento)
+            
+        });
+
         // metto il div nel mio cell nella dabella grid
         grid.appendChild(cell);
         
@@ -83,7 +127,7 @@ function createGrid() {
 }
 
 
-function createSquare(i) {
+function createSquare(indice) {
     // creo il mio div
     const cell = document.createElement('div');
 
@@ -91,20 +135,9 @@ function createSquare(i) {
     cell.classList.add('square');
 
     // aggiungo il numero del quadrato
-    cell.innerHTML = i;
+    cell.innerHTML = indice;
 
-    // aggiungo un addEvenListener per ogni cella al click
-    // voglio gestire ogni quadrato al click
-    cell.addEventListener('click', function () {
-
-        // al console log fa vedere che cella clicko
-        console.log('cell N:', i);
-
-
-        // this (si riferisce all'elemento dell'addEvenetListener)
-        //  toggle (aggiunge e toglie la classe da un elemento)
-        this.classList.toggle('highlight');
-    });
+    
 
     // return 
     return cell;
